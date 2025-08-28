@@ -167,60 +167,88 @@ let deleteMember = async () => {
 window.toggleMicrophone = async () => {
     const audioTrack = localTracks.find(track => track.trackMediaType === 'audio');
     const micLabel = document.getElementById('mic-label');
-    const micIcon = document.getElementById('toggle-mic');
+    const micWrapper = document.getElementById('mic-wrapper');
+    const micOnIcon = micWrapper.querySelector('.mic-on');
+    const micOffIcon = micWrapper.querySelector('.mic-off');
     
     if (!audioTrack) {
         console.error('No audio track found');
         return;
     }
     
-    if (audioTrack.muted) {
-        await audioTrack.setMuted(false);
-        micLabel.textContent = 'Mic On';
-        micIcon.style.backgroundColor = '';
-        console.log('Microphone enabled');
-    } else {
-        await audioTrack.setMuted(true);
-        micLabel.textContent = 'Mic Off';
-        micIcon.style.backgroundColor = 'rgb(255, 80, 80, 1)';
-        console.log('Microphone disabled');
+    try {
+        if (audioTrack.muted) {
+            await audioTrack.setMuted(false);
+            micLabel.textContent = 'Mic On';
+            micWrapper.classList.remove('muted');
+            micOnIcon.style.display = 'block';
+            micOffIcon.style.display = 'none';
+            console.log('Microphone enabled');
+        } else {
+            await audioTrack.setMuted(true);
+            micLabel.textContent = 'Mic Off';
+            micWrapper.classList.add('muted');
+            micOnIcon.style.display = 'none';
+            micOffIcon.style.display = 'block';
+            console.log('Microphone disabled');
+        }
+    } catch (error) {
+        console.error('Error toggling microphone:', error);
     }
 }
 
 window.toggleVideo = async () => {
     const videoTrack = localTracks.find(track => track.trackMediaType === 'video');
     const videoLabel = document.getElementById('video-label');
-    const videoIcon = document.getElementById('video-toggle');
+    const videoWrapper = document.getElementById('video-wrapper');
+    const videoOnIcon = videoWrapper.querySelector('.video-on');
+    const videoOffIcon = videoWrapper.querySelector('.video-off');
     
     if (!videoTrack) {
         console.error('No video track found');
         return;
     }
     
-    if (videoTrack.muted) {
-        await videoTrack.setMuted(false);
-        videoLabel.textContent = 'Video On';
-        videoIcon.style.backgroundColor = '';
-        console.log('Video enabled');
-    } else {
-        await videoTrack.setMuted(true);
-        videoLabel.textContent = 'Video Off';
-        videoIcon.style.backgroundColor = 'rgb(255, 80, 80, 1)';
-        console.log('Video disabled');
+    try {
+        if (videoTrack.muted) {
+            await videoTrack.setMuted(false);
+            videoLabel.textContent = 'Video On';
+            videoWrapper.classList.remove('video-off');
+            videoOnIcon.style.display = 'block';
+            videoOffIcon.style.display = 'none';
+            console.log('Video enabled');
+        } else {
+            await videoTrack.setMuted(true);
+            videoLabel.textContent = 'Video Off';
+            videoWrapper.classList.add('video-off');
+            videoOnIcon.style.display = 'none';
+            videoOffIcon.style.display = 'block';
+            console.log('Video disabled');
+        }
+    } catch (error) {
+        console.error('Error toggling video:', error);
     }
 }
 
 window.toggleChat = () => {
     const chatContainer = document.getElementById('chat-container');
-    if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
-        chatContainer.style.display = 'flex';
+    const chatLabel = document.getElementById('chat-label');
+    
+    if (chatContainer.classList.contains('show')) {
+        chatContainer.classList.remove('show');
+        if (chatLabel) chatLabel.textContent = 'Show Chat';
+        console.log('Chat hidden');
     } else {
-        chatContainer.style.display = 'none';
+        chatContainer.classList.add('show');
+        if (chatLabel) chatLabel.textContent = 'Hide Chat';
+        console.log('Chat shown');
     }
 }
 
 window.leaveRoom = async () => {
-    await leaveAndRemoveLocalStream();
+    if (confirm('Are you sure you want to leave the room?')) {
+        await leaveAndRemoveLocalStream();
+    }
 }
 
 // --- Event Listeners ---
