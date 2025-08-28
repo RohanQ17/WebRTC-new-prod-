@@ -49,6 +49,14 @@ export default defineConfig(({ command, mode }) => {
         '/delete_member': {
           target: 'http://localhost:8080',
           changeOrigin: true,
+        },
+        '/send_message': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+        },
+        '/get_messages': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
         }
       }
     }

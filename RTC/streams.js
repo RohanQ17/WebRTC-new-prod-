@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = chatInput.value.trim();
         if (!message) return;
         try {
-            await fetch('/send_message/', {
+            await fetch('/api/send_message', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch and display messages
     async function fetchAndDisplayMessages() {
         try {
-            const res = await fetch(`/get_messages/?room_name=${encodeURIComponent(CHANNEL)}`);
+            const res = await fetch(`/api/get_messages?room_name=${encodeURIComponent(CHANNEL)}`);
             if (!res.ok) return;
             const data = await res.json();
             chatMessages.innerHTML = '';
