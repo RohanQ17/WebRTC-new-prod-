@@ -1,8 +1,4 @@
-import pkg from 'agora-token';
-const { RtcTokenBuilder, RtcRole } = pkg;
-
 const APP_ID = process.env.APP_ID;
-const APP_CERTIFICATE = process.env.APP_CERTIFICATE;
 
 export default function handler(req, res) {
     // Enable CORS
