@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+    <title>NekoLive</title>
+    <link rel="stylesheet" href= 'styles/room.css' />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&family=Russo+One&display=swap" rel="stylesheet">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Honk&display=swap" rel="stylesheet">
+
+</head>
+<body>
+  <main class="roompage">
+    <section id="room-name-wrapper" style="font-size: 2.5rem;  text-align: center">
+        <p style=" margin: 0;font-family: 'Russo One', sans-serif;color: #eeeeee;">Room name: <span id="roomname" style="font-size: 3rem; font-family: 'Honk',serif"></span></p>
+    </section>
+
+    <section id="video-streams">
+        <video class="video-player" id="user-1" autoplay playsinline muted></video>
+        <video class="video-player" id="user-2" autoplay playsinline></video>
+    </section>
+
+    <!-- Chat Section -->
+    <section id="chat-container">
+        <div id="chat-messages"></div>
+        <div id="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Type a message..." maxlength="200">
+            <button id="send-message-btn">Send</button>
+        </div>
+    </section>
+
+    <section id="controls-wrapper">
+        <div class="control-group">
+            <div class="icon-wrapper" id="mic-wrapper">
+                <img id="toggle-mic" class="control-icon" src="images/microphone.svg" onclick="toggleMicrophone()">
+                <span class="control-label" id="mic-label">Mic On</span>
+            </div>
+            <div class="icon-wrapper" id="video-wrapper">
+                <img id="video-toggle" class="control-icon" src="images/video.svg" onclick="toggleVideo()">
+                <span class="control-label" id="video-label">Video On</span>
+            </div>
+            <div class="icon-wrapper" id="chat-wrapper">
+                <img id="chat-toggle" class="control-icon" src="images/chat.svg" onclick="toggleChat()">
+                <span class="control-label">Chat</span>
+            </div>
+            <div class="icon-wrapper" id="leave-wrapper">
+                <img id="leave-btn" class="control-icon" src="images/leave.svg" onclick="leaveRoom()">
+                <span class="control-label">Leave</span>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.2.js"></script>
+<script type="text/javascript" src="streams.js"></script>
+<script type="text/javascript">
+    // Display room name from session storage
+    document.addEventListener('DOMContentLoaded', function() {
+        const roomName = sessionStorage.getItem('room') || 'Unknown';
+        document.getElementById('roomname').textContent = roomName;
+    });
+</script>
+</body>
+</html>

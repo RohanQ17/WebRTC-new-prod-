@@ -1,0 +1,432 @@
+:root {
+    --shaddow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);
+	--mainColor:#15202B;
+	--secondaryColor:#192734;
+	--borderColor:#164D56;
+	--mainText:#fff;
+	--secondaryText:#eeeeee;
+	--themeDotBorder:#FFF;
+	--previewBg:rgb(25, 39, 52, 0.8);
+	--previewShadow:#111921;
+	--btnColor:#669966;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body{
+    background-color: #2f4464;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto Mono', monospace;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+h3{
+    font-family: system-ui;
+    color: var(--mainText);
+    margin: 5px 0;
+    font-size: clamp(1rem, 4vw, 1.5rem);
+}
+
+.roompage {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    overflow: hidden;
+}
+
+#room-name-wrapper {
+    flex-shrink: 0;
+    background-color: var(--secondaryColor);
+    padding: 10px 5px;
+    border-bottom: 1px solid var(--borderColor);
+    text-align: center;
+}
+
+#video-streams {
+    flex: 1;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    padding-bottom: 80px; /* Space for fixed controls */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #111;
+    min-height: 0;
+}
+
+.video-player{
+    height: 100%;
+    width: 100%;
+    background-color: #000;
+    border: 2px solid var(--borderColor);
+    border-radius: 8px;
+    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Chat Styles */
+#chat-container {
+    position: fixed;
+    right: 10px;
+    bottom: 90px;
+    width: min(300px, 90vw);
+    height: min(400px, 50vh);
+    background-color: var(--secondaryColor);
+    border: 1px solid var(--borderColor);
+    border-radius: 8px;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+#chat-container.show {
+    display: flex;
+}
+
+#chat-messages {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    color: var(--mainText);
+    border-bottom: 1px solid #164D56;
+}
+
+.chat-message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    word-wrap: break-word;
+}
+
+.chat-message.own {
+    background-color: #17a2b8;
+    color: white;
+    margin-left: 20px;
+    text-align: right;
+}
+
+.chat-message.other {
+    background-color: #192734;
+    color: #eeeeee;
+    margin-right: 20px;
+}
+
+.chat-message .username {
+    font-weight: bold;
+    font-size: 0.8em;
+    margin-bottom: 3px;
+    opacity: 0.8;
+}
+
+.chat-message .content {
+    font-size: 0.9em;
+}
+
+.chat-message .timestamp {
+    font-size: 0.7em;
+    opacity: 0.6;
+    margin-top: 3px;
+}
+
+#chat-input-container {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid var(--borderColor);
+}
+
+#chat-input {
+    flex-grow: 1;
+    background-color: var(--mainColor);
+    border: 1px solid var(--borderColor);
+    color: var(--mainText);
+    padding: 5px;
+    border-radius: 3px;
+}
+
+#send-message-btn {
+    background-color: var(--btnColor);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Enhanced Controls */
+#controls-wrapper{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--secondaryColor);
+    padding: clamp(8px, 3vw, 15px);
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid var(--borderColor);
+    z-index: 999;
+}
+
+.control-group {
+    display: flex;
+    gap: clamp(1rem, 6vw, 2rem);
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+}
+
+.icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.icon-wrapper:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.control-icon{
+    height: clamp(20px, 5vw, 24px);
+    width: clamp(20px, 5vw, 24px);
+    background-color: #fff;
+    padding: clamp(8px, 3vw, 12px);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: var(--shaddow);
+}
+
+.control-icon:hover {
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+}
+
+.control-label {
+    font-size: clamp(0.6rem, 2.5vw, 0.8rem);
+    margin-top: 5px;
+    color: var(--secondaryText);
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Control States */
+.icon-wrapper.muted .control-icon,
+.icon-wrapper.video-off .control-icon {
+    background-color: rgb(255, 80, 80);
+}
+
+.icon-wrapper.muted .control-label {
+    color: rgb(255, 80, 80);
+}
+
+.icon-wrapper.video-off .control-label {
+    color: rgb(255, 80, 80);
+}
+
+#leave-btn{
+    background-color: rgb(255, 80, 80, 1) !important;
+}
+
+#leave-wrapper .control-label {
+    color: rgb(255, 80, 80);
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #17a2b8;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: var(--shaddow);
+    z-index: 1001;
+    animation: slideIn 0.3s ease;
+}
+
+.notification.error {
+    background-color: rgb(255, 80, 80);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1200px){
+    #video-streams {
+        gap: 0.5rem;
+        padding: 0.5rem;
+        padding-bottom: 75px;
+    }
+    
+    #chat-container {
+        width: min(280px, 85vw);
+        height: min(350px, 45vh);
+    }
+}
+
+@media screen and (max-width: 768px){
+    .roompage {
+        padding: 0;
+    }
+
+    #video-streams{
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        padding-bottom: 70px;
+    }
+    
+    #chat-container {
+        width: calc(100vw - 20px);
+        height: min(300px, 40vh);
+        right: 10px;
+        left: 10px;
+        bottom: 80px;
+    }
+    
+    .control-group {
+        gap: clamp(0.8rem, 5vw, 1.5rem);
+        padding: 5px;
+    }
+    
+    #room-name-wrapper {
+        text-align: center;
+        padding: 8px 5px;
+    }
+
+    h3 {
+        font-size: clamp(0.9rem, 3.5vw, 1.2rem);
+        margin: 5px 0;
+    }
+}
+
+@media screen and (max-width: 480px){
+    #video-streams{
+        gap: 0.3rem;
+        padding: 0.3rem;
+        padding-bottom: 65px;
+    }
+
+    .video-player{
+        border-radius: 8px;
+        border-width: 1px;
+    }
+    
+    #chat-container {
+        height: min(250px, 35vh);
+        bottom: 70px;
+        right: 5px;
+        left: 5px;
+        width: calc(100vw - 10px);
+    }
+    
+    .control-group {
+        gap: clamp(0.5rem, 4vw, 1rem);
+        padding: 3px;
+    }
+
+    #chat-messages {
+        padding: 5px;
+        font-size: 0.8rem;
+    }
+
+    #chat-input {
+        font-size: 0.8rem;
+        padding: 6px;
+    }
+
+    #send-message-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    h3 {
+        font-size: clamp(0.8rem, 3vw, 1rem);
+        margin: 3px 0;
+    }
+
+    #room-name-wrapper {
+        padding: 5px;
+    }
+    
+    #controls-wrapper {
+        padding: clamp(5px, 2vw, 10px);
+    }
+}
+
+/* Very small screens */
+@media screen and (max-width: 360px) {
+    #video-streams {
+        gap: 0.2rem;
+        padding: 0.2rem;
+        padding-bottom: 60px;
+    }
+    
+    .control-group {
+        gap: 0.4rem;
+    }
+    
+    .control-label {
+        font-size: 0.55rem;
+    }
+    
+    h3 {
+        font-size: 0.85rem;
+    }
+}
+
+/* Landscape orientation on mobile */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    #video-streams {
+        flex-direction: row;
+        padding-bottom: 60px;
+    }
+    
+    #room-name-wrapper {
+        padding: 3px 5px;
+    }
+    
+    h3 {
+        font-size: 0.9rem;
+        margin: 2px 0;
+    }
+    
+    #controls-wrapper {
+        padding: 5px;
+    }
+    
+    .control-group {
+        gap: 0.8rem;
+    }
+    
+    .control-label {
+        font-size: 0.6rem;
+    }
+}
+
+
+
