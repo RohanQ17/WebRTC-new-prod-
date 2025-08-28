@@ -29,6 +29,8 @@ app.use(express.json());
 
 // In-memory store for rooms. In a real application, you would use a database.
 const rooms = {};
+// In-memory store for messages
+const messages = {};
 
 // Endpoint to get APP_ID (safe to expose to client)
 app.get('/get_app_id/', (req, res) => {
@@ -102,6 +104,34 @@ app.post('/delete_member/', (req, res) => {
     } else {
         res.status(200).send('Room not found, nothing to delete.');
     }
+});
+
+// Chat message endpoints
+app.post('/send_message/', (req, res) => {
+    const { room_name, name, UID, message } = req.body;
+    if (!room_name || !name || !UID || !message) {
+        return res.status(400).json({ error: 'room_name, name, UID, and message are required' });
+    }
+    if (!messages[room_name]) {
+        messages[room_name] = [];
+    }
+    const msgObj = {
+        name,
+        UID,
+        message,
+        timestamp: new Date().toISOString()
+    };
+    messages[room_name].push(msgObj);
+    console.log(`Message from '${name}' (UID: ${UID}) in room '${room_name}': ${message}`);
+    res.status(201).json(msgObj);
+});
+
+app.get('/get_messages/', (req, res) => {
+    const { room_name } = req.query;
+    if (!room_name) {
+        return res.status(400).json({ error: 'room_name is required' });
+    }
+    res.json({ messages: messages[room_name] || [] });
 });
 
 // Health check endpoint
