@@ -263,6 +263,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener("beforeunload", deleteMember);
 
-    // Note: The toggle functions are called directly via onclick in HTML
-    // so we don't need event listeners here anymore
+    // Chat functionality
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-message-btn');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // Send message to server
+    sendBtn.addEventListener('click', async () => {
+        const message = chatInput.value.trim();
+        if (!message) return;
+        try {
+            await fetch('/api/send_message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    room_name: CHANNEL,
+                    name: NAME,
+                    UID: UID,
+                    message: message
+                })
+            });
+            chatInput.value = '';
+            await fetchAndDisplayMessages();
+        } catch (err) {
+            console.error('Failed to send message:', err);
+        }
+    });
+
+    // Fetch and display messages
+    async function fetchAndDisplayMessages() {
+        try {
+            const res = await fetch(`/api/get_messages?room_name=${encodeURIComponent(CHANNEL)}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            chatMessages.innerHTML = '';
+            (data.messages || []).forEach(msg => {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'chat-message';
+                msgDiv.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+                chatMessages.appendChild(msgDiv);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        } catch (err) {
+            console.error('Failed to fetch messages:', err);
+        }
+    }
+
+    // Poll for new messages every 2 seconds
+    setInterval(fetchAndDisplayMessages, 2000);
+    fetchAndDisplayMessages();
+
+    // Enter key sends message
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendBtn.click();
+    });
 });
