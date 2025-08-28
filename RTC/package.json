@@ -1,14 +1,12 @@
 {
   "name": "rtc",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "vercel-build": "rm -rf node_modules || true && npm ci && vite build",
-    "deploy": "vercel --prod"
+    "build": "rm -rf dist node_modules/.cache && vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
     "vite": "^7.1.2"

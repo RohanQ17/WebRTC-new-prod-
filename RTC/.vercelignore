@@ -1,0 +1,5 @@
+# Force a complete fresh build by ignoring these patterns
+.vercel
+.git
+README.md
+node_modules/.cache
