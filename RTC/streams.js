@@ -267,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-message-btn');
     const chatMessages = document.getElementById('chat-messages');
+    const chatContainer = document.getElementById('chat-container');
     
     // Initialize chat container
     if (chatContainer) {
@@ -274,12 +275,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Send message to server
-    sendBtn.addEventListener('click', async () => {
+    sendBtn.addEventListener('click', sendMessage);
+    
+    async function sendMessage() {
         const message = chatInput.value.trim();
         if (!message) return;
+        
         try {
-            // Try different endpoint patterns until one works
-            let response;
+            // Try different endpoint patterns for maximum compatibility
+            let response = null;
+            let success = false;
+            
+            // Try pattern 1: /api/send_message
             try {
                 response = await fetch('/api/send_message', {
                     method: 'POST',
@@ -291,48 +298,118 @@ document.addEventListener('DOMContentLoaded', () => {
                         message: message
                     })
                 });
+                if (response.ok) success = true;
             } catch (e) {
-                console.log('Trying fallback endpoint pattern...');
-                response = await fetch('/send_message/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        room_name: CHANNEL,
-                        name: NAME,
-                        UID: UID,
-                        message: message
-                    })
-                });
+                console.log('First endpoint pattern failed:', e);
             }
             
-            chatInput.value = '';
-            await fetchAndDisplayMessages();
+            // Try pattern 2: /send_message
+            if (!success) {
+                try {
+                    response = await fetch('/send_message', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            room_name: CHANNEL,
+                            name: NAME,
+                            UID: UID,
+                            message: message
+                        })
+                    });
+                    if (response.ok) success = true;
+                } catch (e) {
+                    console.log('Second endpoint pattern failed:', e);
+                }
+            }
+            
+            // Try pattern 3: /send_message/
+            if (!success) {
+                try {
+                    response = await fetch('/send_message/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            room_name: CHANNEL,
+                            name: NAME,
+                            UID: UID,
+                            message: message
+                        })
+                    });
+                    if (response.ok) success = true;
+                } catch (e) {
+                    console.log('Third endpoint pattern failed:', e);
+                }
+            }
+            
+            if (success) {
+                chatInput.value = '';
+                await fetchAndDisplayMessages();
+            } else {
+                console.error('All endpoint patterns failed');
+                alert('Could not send message. Please try again later.');
+            }
         } catch (err) {
             console.error('Failed to send message:', err);
         }
-    });
+    }
 
     // Fetch and display messages
     async function fetchAndDisplayMessages() {
         try {
-            // Try different endpoint patterns until one works
-            let res;
+            // Try different endpoint patterns for maximum compatibility
+            let res = null;
+            let success = false;
+            let data = null;
+            
+            // Try pattern 1: /api/get_messages
             try {
                 res = await fetch(`/api/get_messages?room_name=${encodeURIComponent(CHANNEL)}`);
-                if (!res.ok) throw new Error('First endpoint pattern failed');
+                if (res.ok) {
+                    data = await res.json();
+                    success = true;
+                }
             } catch (e) {
-                console.log('Trying fallback endpoint pattern...');
-                res = await fetch(`/get_messages/?room_name=${encodeURIComponent(CHANNEL)}`);
+                console.log('First get endpoint pattern failed:', e);
             }
-            const data = await res.json();
-            chatMessages.innerHTML = '';
-            (data.messages || []).forEach(msg => {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'chat-message';
-                msgDiv.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-                chatMessages.appendChild(msgDiv);
-            });
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Try pattern 2: /get_messages
+            if (!success) {
+                try {
+                    res = await fetch(`/get_messages?room_name=${encodeURIComponent(CHANNEL)}`);
+                    if (res.ok) {
+                        data = await res.json();
+                        success = true;
+                    }
+                } catch (e) {
+                    console.log('Second get endpoint pattern failed:', e);
+                }
+            }
+            
+            // Try pattern 3: /get_messages/
+            if (!success) {
+                try {
+                    res = await fetch(`/get_messages/?room_name=${encodeURIComponent(CHANNEL)}`);
+                    if (res.ok) {
+                        data = await res.json();
+                        success = true;
+                    }
+                } catch (e) {
+                    console.log('Third get endpoint pattern failed:', e);
+                }
+            }
+            
+            if (success && data) {
+                chatMessages.innerHTML = '';
+                (data.messages || []).forEach(msg => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'chat-message';
+                    msgDiv.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+                    chatMessages.appendChild(msgDiv);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } else {
+                console.error('All get endpoint patterns failed');
+            }
         } catch (err) {
             console.error('Failed to fetch messages:', err);
         }
@@ -344,6 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Enter key sends message
     chatInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') sendBtn.click();
+        if (e.key === 'Enter') sendMessage();
     });
 });
