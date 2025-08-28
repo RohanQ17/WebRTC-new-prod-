@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { resolve } from 'path'
 import fs from 'fs'
 
 export default defineConfig(({ command, mode }) => {
@@ -9,7 +10,13 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       minify: isProduction,
-      sourcemap: !isProduction
+      sourcemap: !isProduction,
+      rollupOptions: {
+        input: {
+          main: resolve(__dirname, 'index.html'),
+          room: resolve(__dirname, 'room.html')
+        }
+      }
     }
   }
 
