@@ -1,4 +1,4 @@
-// In-memory store for messages (Note: In production, use a database like Redis or MongoDB)
+// In-memory store for messages (Force fresh deployment 2025-08-29)
 // This is a temporary solution and messages will be lost on serverless function cold starts
 const messages = {};
 

@@ -11,5 +11,9 @@
     { "src": "/get_messages", "dest": "/api/get_messages.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/dist/$1" }
-  ]
+  ],
+  "buildCache": {
+    "force": true,
+    "timestamp": "2025-08-29-01"
+  }
 }

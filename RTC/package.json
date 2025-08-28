@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "vercel-build": "npm install && vite build"
+    "vercel-build": "rm -rf node_modules || true && npm ci && vite build",
+    "deploy": "vercel --prod"
   },
   "devDependencies": {
     "vite": "^7.1.2"
