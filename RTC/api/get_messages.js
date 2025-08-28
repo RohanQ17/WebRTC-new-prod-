@@ -1,6 +1,6 @@
 // In-memory store for messages (Note: In production, use a database like Redis or MongoDB)
 // This is a temporary solution and messages will be lost on serverless function cold starts
-let messages = {};
+const messages = {};
 
 export default function handler(req, res) {
     // Enable CORS

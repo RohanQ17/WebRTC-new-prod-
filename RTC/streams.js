@@ -267,22 +267,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-message-btn');
     const chatMessages = document.getElementById('chat-messages');
+    
+    // Initialize chat container
+    if (chatContainer) {
+        chatContainer.style.display = 'none';
+    }
 
     // Send message to server
     sendBtn.addEventListener('click', async () => {
         const message = chatInput.value.trim();
         if (!message) return;
         try {
-            await fetch('/api/send_message', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    room_name: CHANNEL,
-                    name: NAME,
-                    UID: UID,
-                    message: message
-                })
-            });
+            // Try different endpoint patterns until one works
+            let response;
+            try {
+                response = await fetch('/api/send_message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        room_name: CHANNEL,
+                        name: NAME,
+                        UID: UID,
+                        message: message
+                    })
+                });
+            } catch (e) {
+                console.log('Trying fallback endpoint pattern...');
+                response = await fetch('/send_message/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        room_name: CHANNEL,
+                        name: NAME,
+                        UID: UID,
+                        message: message
+                    })
+                });
+            }
+            
             chatInput.value = '';
             await fetchAndDisplayMessages();
         } catch (err) {
@@ -293,8 +315,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch and display messages
     async function fetchAndDisplayMessages() {
         try {
-            const res = await fetch(`/api/get_messages?room_name=${encodeURIComponent(CHANNEL)}`);
-            if (!res.ok) return;
+            // Try different endpoint patterns until one works
+            let res;
+            try {
+                res = await fetch(`/api/get_messages?room_name=${encodeURIComponent(CHANNEL)}`);
+                if (!res.ok) throw new Error('First endpoint pattern failed');
+            } catch (e) {
+                console.log('Trying fallback endpoint pattern...');
+                res = await fetch(`/get_messages/?room_name=${encodeURIComponent(CHANNEL)}`);
+            }
             const data = await res.json();
             chatMessages.innerHTML = '';
             (data.messages || []).forEach(msg => {
